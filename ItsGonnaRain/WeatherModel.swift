@@ -1,5 +1,5 @@
 //
-//  Weather.swift
+//  WeatherModel.swift
 //  ItsGonnaRain
 //
 //  Created by Ezra Black on 6/23/21.
