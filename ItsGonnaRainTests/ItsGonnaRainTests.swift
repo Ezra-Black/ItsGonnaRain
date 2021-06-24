@@ -117,17 +117,24 @@ class ItsGonnaRainTests: XCTestCase {
                 }
                 """.data(using: .utf8)!
     
-    func testDownloadingCurrentWeatherJSON() {
-        let client = NetworkManager()
-        let mockLoader = MockAPI(data: validJSONSanFran, error: .none)
-        client.fetchCurrentWeather(city: , completion: <#T##(WeatherModel) -> ()#>)
-        }
-        wait(for: [expectation], timeout: 10)
-    }
+//    func testDownloadingCurrentWeatherJSON() {
+//        let client = NetworkManager()
+//        let mockLoader = MockAPI(data: validJSONSanFran, error: .none)
+//        let expectation = expectation(description: "Waiting for data")
+//        client.fetchCurrentWeather(city: "San Francisco", using: mockLoader) { (weather) in
+//            let wthr = weather
+//            XCTAssertTrue(wthr.name != nil)
+//            expectation.fulfill()
+//        }
+//        wait(for: [expectation], timeout: 10)
+//
+//        }
+//    }
     
     
     func testJSON() {
         
     }
+
 
 }

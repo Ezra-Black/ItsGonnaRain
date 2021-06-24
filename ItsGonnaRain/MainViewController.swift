@@ -8,9 +8,12 @@
 import UIKit
 import CoreLocation
 
-class MainViewController: UIViewController, CLLocationManagerDelegate {
+class MainViewController: UIViewController, CLLocationManagerDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
     
     let networkManager      = NetworkManager()
+    var collectionView      : UICollectionView!
+    var forecastData        : [ForecastTemperature] = []
+
     var locationManager     = CLLocationManager()
     var currentLoc          : CLLocation?
     var stackView           : UIStackView!
@@ -87,7 +90,14 @@ class MainViewController: UIViewController, CLLocationManagerDelegate {
         // Do any additional setup after loading the view.
         view.backgroundColor = .systemBackground
         
-        self.navigationItem.rightBarButtonItems = [UIBarButtonItem(image: UIImage(systemName: "plus.circle"), style: .done, target: self, action: #selector(handleAddPlaceButton)), UIBarButtonItem(image: UIImage(systemName: "thermometer"), style: .done, target: self, action: #selector(handleShowForecast)),UIBarButtonItem(image: UIImage(systemName: "arrow.clockwise"), style: .done, target: self, action: #selector(handleRefresh))]
+        collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCompositionalLayout())
+        collectionView.register(ForecastCell.self, forCellWithReuseIdentifier: ForecastCell.reuseIdentifier)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        
+        
+        self.navigationItem.rightBarButtonItems = [UIBarButtonItem(image: UIImage(systemName: "plus.circle"), style: .done, target: self, action: #selector(handleAddPlaceButton)), UIBarButtonItem(image: UIImage(systemName: "arrow.clockwise"), style: .done, target: self, action: #selector(handleRefresh))]
         
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
@@ -98,6 +108,8 @@ class MainViewController: UIViewController, CLLocationManagerDelegate {
         
         setupViews()
         layoutViews()
+        loadData(city: "San Francisco")
+        
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -111,8 +123,8 @@ class MainViewController: UIViewController, CLLocationManagerDelegate {
         loadDataUsingCoordinates(lat: latitude.description, lon: longitude.description)
     }
     
-    
     func loadData(city: String) {
+        loadWeeklyForecast(city: city)
         networkManager.fetchCurrentWeather(city: city) { (weather) in
             print("Current Temperature", weather.main.temp.kelvinToFConverter())
             let formatter = DateFormatter()
@@ -128,6 +140,16 @@ class MainViewController: UIViewController, CLLocationManagerDelegate {
                 self.maxTmp.text = ("Max: " + String(weather.main.temp_max.kelvinToFConverter()) + "°F" )
                 self.tmpSmbl.loadImageFromURL(url: "http://openweathermap.org/img/wn/\(weather.weather[0].icon)@2x.png")
                 UserDefaults.standard.set("\(weather.name ?? "")", forKey: "SelectedCity")
+            }
+        }
+    }
+    
+    func loadWeeklyForecast(city: String) {
+        networkManager.fetchWeeklyForecast(city: city) { (forecast) in
+            self.forecastData = forecast
+            print("Total Count:", forecast.count)
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
             }
         }
     }
@@ -175,10 +197,6 @@ class MainViewController: UIViewController, CLLocationManagerDelegate {
         self.present(alertController, animated: true, completion: nil)
     }
     
-    @objc func handleShowForecast() {
-        self.navigationController?.pushViewController(WthrForecastViewController(), animated: true)
-    }
-    
     @objc func handleRefresh() {
         let city = UserDefaults.standard.string(forKey: "SelectedCity") ?? ""
         loadData(city: city)
@@ -192,6 +210,7 @@ class MainViewController: UIViewController, CLLocationManagerDelegate {
         view.addSubview(crrntTime)
         view.addSubview(minTmp)
         view.addSubview(maxTmp)
+        view.addSubview(collectionView)
     }
     
     func layoutViews() {
@@ -206,10 +225,12 @@ class MainViewController: UIViewController, CLLocationManagerDelegate {
         crrntTime.heightAnchor.constraint(equalToConstant: 10).isActive = true
         crrntTime.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -18).isActive = true
         
-        crrntTmpLbl.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -20).isActive = true
+//        crrntTmpLbl.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -20).isActive = true
+        crrntTmpLbl.topAnchor.constraint(equalTo: crrntTime.bottomAnchor, constant: 18).isActive = true
         crrntTmpLbl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 18).isActive = true
         crrntTmpLbl.heightAnchor.constraint(equalToConstant: 70).isActive = true
         crrntTmpLbl.widthAnchor.constraint(equalToConstant: 250).isActive = true
+     
         
         tmpSmbl.topAnchor.constraint(equalTo: crrntTmpLbl.bottomAnchor).isActive = true
         tmpSmbl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 18).isActive = true
@@ -221,7 +242,7 @@ class MainViewController: UIViewController, CLLocationManagerDelegate {
         tempDetails.heightAnchor.constraint(equalToConstant: 20).isActive = true
         tempDetails.widthAnchor.constraint(equalToConstant: 250).isActive = true
         
-        minTmp.topAnchor.constraint(equalTo: tmpSmbl.bottomAnchor, constant: 80).isActive = true
+        minTmp.topAnchor.constraint(equalTo: tmpSmbl.bottomAnchor, constant: 18).isActive = true
         minTmp.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 18).isActive = true
         minTmp.heightAnchor.constraint(equalToConstant: 20).isActive = true
         minTmp.widthAnchor.constraint(equalToConstant: 100).isActive = true
@@ -230,6 +251,16 @@ class MainViewController: UIViewController, CLLocationManagerDelegate {
         maxTmp.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 18).isActive = true
         maxTmp.heightAnchor.constraint(equalToConstant: 20).isActive = true
         maxTmp.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        
+//        collectionView.topAnchor.constraint(equalTo: maxTmp.bottomAnchor, constant: 18).isActive = true
+//        collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 18).isActive = true
+//        collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 18).isActive = true
+//        collectionView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+//        collectionView.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        collectionView.topAnchor.constraint(equalTo: maxTmp.bottomAnchor, constant: 8).isActive = true
+        collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
     }
     
     func transparentNavigationBar() {
@@ -239,5 +270,41 @@ class MainViewController: UIViewController, CLLocationManagerDelegate {
         navigationItem.backBarButtonItem = UIBarButtonItem(
             title: "", style: .plain, target: nil, action: nil)
     }
+    
+    //collection view Configuration
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return forecastData.count
+     }
+     
+     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ForecastCell.reuseIdentifier, for: indexPath) as! ForecastCell
+        cell.configure(with: forecastData[indexPath.row])
+        return cell
+     }
+     
+
+    func createCompositionalLayout() -> UICollectionViewLayout {
+        let layout = UICollectionViewCompositionalLayout { sectionIndex, layoutEnvironment in
+            self.createFeaturedSection()
+        }
+
+        let config = UICollectionViewCompositionalLayoutConfiguration()
+        layout.configuration = config
+        return layout
+    }
+    
+    func createFeaturedSection() -> NSCollectionLayoutSection {
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
+
+       let layoutItem = NSCollectionLayoutItem(layoutSize: itemSize)
+       layoutItem.contentInsets = NSDirectionalEdgeInsets(top:5, leading: 5, bottom: 0, trailing: 5)
+
+       let layoutGroupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(110))
+       let layoutGroup = NSCollectionLayoutGroup.vertical(layoutSize: layoutGroupSize, subitems: [layoutItem])
+
+       let layoutSection = NSCollectionLayoutSection(group: layoutGroup)
+      // layoutSection.orthogonalScrollingBehavior = .groupPagingCentered
+       return layoutSection
+}
 }
 
