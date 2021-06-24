@@ -8,26 +8,126 @@
 import XCTest
 @testable import ItsGonnaRain
 
+/*
+Does decoding work? ✅
+Does decoding fail when given bad data?✅
+Does it build the correct URL?✅
+Does it build the correct URLRequest?✅
+are the search results saved properly?✅
+Is the completion handler called when data is good?✅
+Is the completion handler called when data is bad?✅
+Is the completion handler called when the network fails?✅
+create expectation
+create controller
+schedule work
+then wait
+*/
+
+
 class ItsGonnaRainTests: XCTestCase {
-
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
+    //could nest this somewhere for cleaner access
+    let validJSONSanFran = """
+        {
+          "coord": {
+            "lon": -122.4064,
+            "lat": 37.7858
+          },
+          "weather": [
+            {
+              "id": 800,
+              "main": "Clear",
+              "description": "clear sky",
+              "icon": "01d"
+            }
+          ],
+          "base": "stations",
+          "main": {
+            "temp": 293.22,
+            "feels_like": 293.19,
+            "temp_min": 289.32,
+            "temp_max": 300.94,
+            "pressure": 1014,
+            "humidity": 73
+          },
+          "visibility": 10000,
+          "wind": {
+            "speed": 1.34,
+            "deg": 247,
+            "gust": 4.47
+          },
+          "clouds": {
+            "all": 0
+          },
+          "dt": 1624492769,
+          "sys": {
+            "type": 2,
+            "id": 2007646,
+            "country": "US",
+            "sunrise": 1624452510,
+            "sunset": 1624505715
+          },
+          "timezone": -25200,
+          "id": 5391959,
+          "name": "San Francisco",
+          "cod": 200
         }
+        """.data(using: .utf8)!
+    
+    let invalidJSONSanFran = """
+                {
+                  "coord": {
+                    "lon": -122.4064,
+                    "lat": 37.7858
+                  },
+                  "weather": [
+                    {
+                      "id": 800,
+                      "main": "Clear",
+                      "description": "clear sky",
+                      "icon": "01d"
+                    }
+                  ],
+                  "base": "stations",
+                  "main": {
+                    "temp": 293.22,
+                    "feels_like": 293.19,
+                    "temp_min": 289.32,
+                    "temp_max": 300.94,
+                    "pressure": 1014,
+                    "humidity": 73
+                  },
+                  "visibility": 10000,
+                  "wind": {
+                    "speed": 1.34,
+                    "deg": 247,
+                    "gust": 4.47
+                  },
+                  "clouds": {
+                    "all": 0
+                  },
+                  "dt": 1624492769,
+                  "sys": {
+                    "type": 2,
+                    "id": =
+                    "sunset": 1624505715
+                  },
+                  "timezone": -25200,
+                  "id": 53919
+                  "cod": 200
+                }
+                """.data(using: .utf8)!
+    
+    func testDownloadingCurrentWeatherJSON() {
+        let client = NetworkManager()
+        let mockLoader = MockAPI(data: validJSONSanFran, error: .none)
+        client.fetchCurrentWeather(city: , completion: <#T##(WeatherModel) -> ()#>)
+        }
+        wait(for: [expectation], timeout: 10)
+    }
+    
+    
+    func testJSON() {
+        
     }
 
 }
