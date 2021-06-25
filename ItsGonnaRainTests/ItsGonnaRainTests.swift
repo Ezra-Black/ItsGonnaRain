@@ -13,128 +13,69 @@ Does decoding work? ✅
 Does decoding fail when given bad data?✅
 Does it build the correct URL?✅
 Does it build the correct URLRequest?✅
-are the search results saved properly?✅
 Is the completion handler called when data is good?✅
 Is the completion handler called when data is bad?✅
 Is the completion handler called when the network fails?✅
-create expectation
-create controller
-schedule work
-then wait
 */
 
 
 class ItsGonnaRainTests: XCTestCase {
-    //could nest this somewhere for cleaner access
-    let validJSONSanFran = """
-        {
-          "coord": {
-            "lon": -122.4064,
-            "lat": 37.7858
-          },
-          "weather": [
-            {
-              "id": 800,
-              "main": "Clear",
-              "description": "clear sky",
-              "icon": "01d"
+    //usually you only want one instance for each test for unitTesting, but for times sake I threw in some good/bad JSON to work with
+    
+    
+    func testDownloadMockCurrentWeatherJSON() {
+        let json = validJSONSanFran
+        let mockLoader = MockAPI(data: json, error: .none)
+        let client = NetworkManager(networkLoader: mockLoader )
+        let promise = expectation(description: "Waiting for data")
+        client.fetchCurrentWeather(city: "San Francisco", using: mockLoader) { (weather) in
+            
+            guard mockLoader.data != nil,
+                  mockLoader.error == nil else {
+                XCTFail("Mock Data Loader was nil")
+                return
             }
-          ],
-          "base": "stations",
-          "main": {
-            "temp": 293.22,
-            "feels_like": 293.19,
-            "temp_min": 289.32,
-            "temp_max": 300.94,
-            "pressure": 1014,
-            "humidity": 73
-          },
-          "visibility": 10000,
-          "wind": {
-            "speed": 1.34,
-            "deg": 247,
-            "gust": 4.47
-          },
-          "clouds": {
-            "all": 0
-          },
-          "dt": 1624492769,
-          "sys": {
-            "type": 2,
-            "id": 2007646,
-            "country": "US",
-            "sunrise": 1624452510,
-            "sunset": 1624505715
-          },
-          "timezone": -25200,
-          "id": 5391959,
-          "name": "San Francisco",
-          "cod": 200
+            let wthr = weather
+            let sanTimeZone = -25200
+            XCTAssertTrue(wthr.name != nil)
+            XCTAssertEqual(sanTimeZone, wthr.timezone)
+            promise.fulfill()
         }
-        """.data(using: .utf8)!
-    
-    let invalidJSONSanFran = """
-                {
-                  "coord": {
-                    "lon": -122.4064,
-                    "lat": 37.7858
-                  },
-                  "weather": [
-                    {
-                      "id": 800,
-                      "main": "Clear",
-                      "description": "clear sky",
-                      "icon": "01d"
-                    }
-                  ],
-                  "base": "stations",
-                  "main": {
-                    "temp": 293.22,
-                    "feels_like": 293.19,
-                    "temp_min": 289.32,
-                    "temp_max": 300.94,
-                    "pressure": 1014,
-                    "humidity": 73
-                  },
-                  "visibility": 10000,
-                  "wind": {
-                    "speed": 1.34,
-                    "deg": 247,
-                    "gust": 4.47
-                  },
-                  "clouds": {
-                    "all": 0
-                  },
-                  "dt": 1624492769,
-                  "sys": {
-                    "type": 2,
-                    "id": =
-                    "sunset": 1624505715
-                  },
-                  "timezone": -25200,
-                  "id": 53919
-                  "cod": 200
-                }
-                """.data(using: .utf8)!
-    
-//    func testDownloadingCurrentWeatherJSON() {
-//        let client = NetworkManager()
-//        let mockLoader = MockAPI(data: validJSONSanFran, error: .none)
-//        let expectation = expectation(description: "Waiting for data")
-//        client.fetchCurrentWeather(city: "San Francisco", using: mockLoader) { (weather) in
-//            let wthr = weather
-//            XCTAssertTrue(wthr.name != nil)
-//            expectation.fulfill()
-//        }
-//        wait(for: [expectation], timeout: 10)
-//
-//        }
-//    }
-    
-    
-    func testJSON() {
-        
+        wait(for: [promise], timeout: 5)
     }
-
-
+    //add contextual type of two arguments to the closures of the network, allowing us to pass errors within the tests themselves. If I get the time before the interview be sure to implement this to make the tests as clean as possible  -------------------------------------------------------------------------👇
+    //   client.fetchCurrentWeather(city: "San Fancisco", using: mockloader) { (weather, error) in
+    func testDecodingBadMockJSON() {
+        let dataLoader = MockAPI(data: invalidJSONSanFran, error: NSError())
+        let client = NetworkManager(networkLoader: dataLoader)
+        let promise = expectation(description: "Error Loading Bad Data")
+        
+        client.fetchCurrentWeather(city: "San Francisco", using: dataLoader) { (weather) in
+            guard dataLoader.error != nil else {
+                XCTAssertNil(weather)
+                XCTFail("Testing for bad mock data failed")
+                return
+            }
+    //compare jsons?
+            XCTAssertEqual(dataLoader.data, invalidJSONSanFran)
+            promise.fulfill()
+        }
+        wait(for: [promise], timeout: 5)
+    }
+    
+    
+    func testFetchingCurrentWeather() {
+        //calling a real network manager here
+        let client = NetworkManager()
+        let expectation = expectation(description: "Received valid JSON")
+        client.fetchCurrentWeather(city: "San Francisco") { weather in
+            XCTAssertNotNil(weather)
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 1)
+    }
+    
+    
 }
+
+

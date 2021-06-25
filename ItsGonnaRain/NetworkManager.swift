@@ -12,12 +12,13 @@ protocol NetworkingProtocol {
     func fetchCurrentLocationWeather(lat: String, lon: String, using session: NetworkDataLoader, completion: @escaping (WeatherModel) -> ())
     func fetchWeeklyForecast(city: String, using session: NetworkDataLoader, completion: @escaping ([ForecastTemperature]) -> ())
 }
+//notifcation observers ^
+
 struct Server {
     static let API_KEY = "10b29f8b23f59520d886d311fa84daea"
 }
 
 class NetworkManager : NetworkingProtocol {
-    
     
     var networkLoader: NetworkDataLoader
     
@@ -44,9 +45,9 @@ class NetworkManager : NetworkingProtocol {
                  } catch {
                      print(error)
                  }
-                     
              }.resume()
     }
+    
     
     func fetchCurrentWeather(city: String,
                              using session: NetworkDataLoader = URLSession.shared,
@@ -106,7 +107,6 @@ class NetworkManager : NetworkingProtocol {
                     var forecast5 : [WeatherInfo] = []
                     var forecast6 : [WeatherInfo] = []
                     
-                    print("Total data:", currentForecast.list.count)
                     var totalData = currentForecast.list.count
                     
                     for day in 0...currentForecast.list.count - 1 {
