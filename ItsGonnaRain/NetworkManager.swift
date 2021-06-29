@@ -6,24 +6,36 @@
 //
 
 import Foundation
-//move this protocol and struct out to their own files eventually
-protocol NetworkingProtocol {
-    func fetchCurrentWeather(city: String, using session: NetworkDataLoader, completion: @escaping (WeatherModel) -> ())
-    func fetchCurrentLocationWeather(lat: String, lon: String, using session: NetworkDataLoader, completion: @escaping (WeatherModel) -> ())
-    func fetchWeeklyForecast(city: String, using session: NetworkDataLoader, completion: @escaping ([ForecastTemperature]) -> ())
-}
-//notifcation observers ^
 
 struct Server {
     static let API_KEY = "10b29f8b23f59520d886d311fa84daea"
 }
+extension Notification.Name {
+    static var locationRequest: Notification.Name {
+        return .init("MainViewController.locationRequest")
+    }
+    static var inputRequest: Notification.Name {
+        return .init("MainViewController.inputRequest")
+    }
+}
+let notificationCenter: NotificationCenter
 
-class NetworkManager : NetworkingProtocol {
+
+class NetworkManager {
     
     var networkLoader: NetworkDataLoader
-    
-    init(networkLoader: NetworkDataLoader = URLSession.shared) {
+
+    init(networkLoader: NetworkDataLoader = URLSession.shared, notificationCenter: NotificationCenter = .default) {
+        self.notificationCenter = notificationCenter
         self.networkLoader = networkLoader
+    }
+    
+    private var state = State.location {
+        didSet { stateDidChange() }
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     func fetchCurrentLocationWeather(lat: String,
@@ -46,6 +58,7 @@ class NetworkManager : NetworkingProtocol {
                      print(error)
                  }
              }.resume()
+        state = .location
     }
     
     
@@ -68,6 +81,7 @@ class NetworkManager : NetworkingProtocol {
             }
             
         }.resume()
+        state = .input
     }
     
     
@@ -98,8 +112,7 @@ class NetworkManager : NetworkingProtocol {
                         
                     var forecastmodelArray : [ForecastTemperature] = []
                     var fetchedData : [WeatherInfo] = [] //Just for loop completion
-                    
-                    //to make things easier on myself, I thought to just make empty values that I can iterate through with a switch to populate. I got even lazier though and realized I could do more copy pasta and also just iterate through a if statement. With more time I would turn this out into a function that would allow all of this to happen more seamlessy.
+                 
                     var forecast : [WeatherInfo] = []
                     var forecast2 : [WeatherInfo] = []
                     var forecast3 : [WeatherInfo] = []
@@ -210,5 +223,20 @@ class NetworkManager : NetworkingProtocol {
                      print(error)
                  }
         }.resume()
+        state = .input
+    }
+}
+extension NetworkManager {
+    enum State {
+        case location
+        case input
+    }
+    func stateDidChange() {
+        switch state {
+        case .location:
+            notificationCenter.post(name: .locationRequest, object: nil)
+        case .input:
+            notificationCenter.post(name: .inputRequest, object: nil)
+        }
     }
 }

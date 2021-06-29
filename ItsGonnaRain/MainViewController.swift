@@ -7,11 +7,13 @@
 
 import UIKit
 import CoreLocation
+import NotificationCenter
 
-class MainViewController: UIViewController, CLLocationManagerDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
+
+class MainViewController: UIViewController, CLLocationManagerDelegate {
     
     let networkManager      = NetworkManager()
-    var collectionView      : UICollectionView!
+    var collectionView      = CustomCollectionViewController()
     var forecastData        : [ForecastTemperature] = []
     
     var locationManager     = CLLocationManager()
@@ -19,6 +21,8 @@ class MainViewController: UIViewController, CLLocationManagerDelegate, UICollect
     var stackView           : UIStackView!
     var latitude            : CLLocationDegrees!
     var longitude           : CLLocationDegrees!
+    
+
     
     let crrntLction: UILabel = {
         let label           = UILabel()
@@ -88,13 +92,6 @@ class MainViewController: UIViewController, CLLocationManagerDelegate, UICollect
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        
-        collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCompositionalLayout())
-        collectionView.register(ForecastCell.self, forCellWithReuseIdentifier: ForecastCell.reuseIdentifier)
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.delegate = self
-        collectionView.dataSource = self
-        collectionView.backgroundColor = .systemBackground
         
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
@@ -192,6 +189,10 @@ class MainViewController: UIViewController, CLLocationManagerDelegate, UICollect
         self.present(alertController, animated: true, completion: nil)
     }
     
+    @objc func refresh() {
+        
+    }
+    
     @objc func handleRefresh() {
         let city = UserDefaults.standard.string(forKey: "SelectedCity") ?? ""
         loadData(city: city)
@@ -261,39 +262,8 @@ class MainViewController: UIViewController, CLLocationManagerDelegate, UICollect
     }
     
     //collection view Configuration
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return forecastData.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ForecastCell.reuseIdentifier, for: indexPath) as! ForecastCell
-        cell.configure(with: forecastData[indexPath.row])
-        return cell
-    }
-    
-    
-    func createCompositionalLayout() -> UICollectionViewLayout {
-        let layout = UICollectionViewCompositionalLayout { sectionIndex, layoutEnvironment in
-            self.createFeaturedSection()
-        }
-        
-        let config = UICollectionViewCompositionalLayoutConfiguration()
-        layout.configuration = config
-        return layout
-    }
-    
-    func createFeaturedSection() -> NSCollectionLayoutSection {
-        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
-        
-        let layoutItem = NSCollectionLayoutItem(layoutSize: itemSize)
-        layoutItem.contentInsets = NSDirectionalEdgeInsets(top:5, leading: 5, bottom: 0, trailing: 5)
-        
-        let layoutGroupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(110))
-        let layoutGroup = NSCollectionLayoutGroup.vertical(layoutSize: layoutGroupSize, subitems: [layoutItem])
-        
-        let layoutSection = NSCollectionLayoutSection(group: layoutGroup)
-        // layoutSection.orthogonalScrollingBehavior = .groupPagingCentered
-        return layoutSection
-    }
+   
 }
+
+
 
