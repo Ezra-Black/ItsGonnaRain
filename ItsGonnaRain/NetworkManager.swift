@@ -2,7 +2,7 @@
 //  NetworkManager.swift
 //  ItsGonnaRain
 //
-//  Created by Ezra Black on 6/23/21.
+//  Created by Ezra Black on 7/05/21.
 //
 
 import Foundation
@@ -138,11 +138,6 @@ class NetworkManager : NetworkingProtocol {
                         if wkdayComponent == currentWeekDay - 1 {
                             totalData = totalData - 1
                         }
-                        
-                        
-                
-                        
-                        //I could make this equatable and potentially make this a switch case as well. this is very verbose and redundant, and 100% a performance issue in some form.
                         if wkdayComponent == currentWeekDay {
                             let info = WeatherInfo(temp: mainTemp, min_temp: minTemp, max_temp: maxTemp, description: descriptionTemp, icon: icon, time: time)
                             forecast.append(info)

@@ -2,8 +2,7 @@
 //  MockAPI.swift
 //  WeatherApp
 //
-//  Created by Ezra Black on 6/23/21.
-//  Copyright © 2021 Muhammad Osama Naeem. All rights reserved.
+//  Created by Ezra Black on 7/05/21.
 //
 
 import Foundation

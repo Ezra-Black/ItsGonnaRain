@@ -28,7 +28,7 @@ class MainViewController: UIViewController, CLLocationManagerDelegate, UICollect
         label.numberOfLines = 0
         label.font          = UIFont.systemFont(ofSize: 38, weight: .heavy)
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.accessibilityIdentifier = "current location"
+        label.accessibilityIdentifier = "current location label"
         return label
     }()
     let crrntTime: UILabel = {
@@ -38,6 +38,7 @@ class MainViewController: UIViewController, CLLocationManagerDelegate, UICollect
         label.textColor     = .label
         label.font          = UIFont.systemFont(ofSize: 10, weight: .heavy)
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.accessibilityIdentifier = "current time label"
         return label
     }()
     let crrntTmpLbl: UILabel = {
@@ -47,6 +48,7 @@ class MainViewController: UIViewController, CLLocationManagerDelegate, UICollect
         label.textAlignment = .left
         label.font          = UIFont.systemFont(ofSize: 60, weight: .heavy)
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.accessibilityIdentifier = "curent temp label"
         return label
     }()
     let tempDetails: UILabel = {
@@ -56,6 +58,7 @@ class MainViewController: UIViewController, CLLocationManagerDelegate, UICollect
         label.textColor     = .label
         label.font          = UIFont.systemFont(ofSize: 14, weight: .light)
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.accessibilityIdentifier = "temp details label"
         return label
     }()
     let tmpSmbl: UIImageView = {
@@ -64,6 +67,7 @@ class MainViewController: UIViewController, CLLocationManagerDelegate, UICollect
         img.contentMode = .scaleAspectFit
         img.tintColor   = .gray
         img.translatesAutoresizingMaskIntoConstraints = false
+        img.accessibilityLabel = "tmp image view"
         return img
     }()
     let maxTmp: UILabel = {
@@ -73,6 +77,7 @@ class MainViewController: UIViewController, CLLocationManagerDelegate, UICollect
         label.textColor     = .label
         label.font          = UIFont.systemFont(ofSize: 14, weight: .medium)
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.accessibilityIdentifier = "max temp label"
         return label
     }()
     let minTmp: UILabel = {
@@ -82,19 +87,21 @@ class MainViewController: UIViewController, CLLocationManagerDelegate, UICollect
         label.textColor     = .label
         label.font          = UIFont.systemFont(ofSize: 14, weight: .medium)
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.accessibilityIdentifier = "min temp label"
         return label
     }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        
+        self.accessibilityLabel = "MainView"
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCompositionalLayout())
         collectionView.register(ForecastCell.self, forCellWithReuseIdentifier: ForecastCell.reuseIdentifier)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.backgroundColor = .systemBackground
+        collectionView.accessibilityIdentifier = "collectionView"
         
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
