@@ -2,41 +2,61 @@
 //  ItsGonnaRainUITests.swift
 //  ItsGonnaRainUITests
 //
-//  Created by Ezra Black on 6/23/21.
+//  Created by Ezra Black on 7/05/21.
 //
 
 import XCTest
 
 class ItsGonnaRainUITests: XCTestCase {
-
+    let app = XCUIApplication()
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-
-        // In UI tests it is usually best to stop immediately when a failure occurs.
-        continueAfterFailure = false
-
-        // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
-    }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    func testExample() throws {
-        // UI tests must launch the application that they test.
-        let app = XCUIApplication()
         app.launch()
-
-        // Use recording to get started writing UI tests.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+        continueAfterFailure = false
     }
-
-    func testLaunchPerformance() throws {
-        if #available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 7.0, *) {
-            // This measures how long it takes to launch your application.
-            measure(metrics: [XCTApplicationLaunchMetric()]) {
-                XCUIApplication().launch()
-            }
-        }
+    
+    override func tearDownWithError() throws {
     }
+    
+    func testHomeScreen() throws {
+        
+        let label = app.staticTexts.element(matching: .any, identifier: "current location label")
+        let label2 = app.staticTexts.element(matching: .any, identifier: "current time label")
+        let label3 = app.staticTexts.element(matching: .any, identifier: "curent temp label")
+        let label4 = app.staticTexts.element(matching: .any, identifier: "temp details label")
+        let label5 = app.staticTexts.element(matching: .any, identifier: "max temp label")
+        let label6 = app.staticTexts.element(matching: .any, identifier: "min temp label")
+        let collectionView = app.collectionViews.element(matching: .collectionView, identifier: "collectionView")
+        XCTAssertTrue(label.exists)
+        XCTAssertTrue(label2.exists)
+        XCTAssertTrue(label3.exists)
+        XCTAssertTrue(label4.exists)
+        XCTAssertTrue(label5.exists)
+        XCTAssertTrue(label6.exists)
+        XCTAssertTrue(collectionView.exists)
+    }
+    
+    func testSimpleLifecycle() throws {
+        let itsgonnarainMainviewNavigationBar = app.navigationBars["ItsGonnaRain.MainView"]
+        itsgonnarainMainviewNavigationBar.buttons["refresh"].tap()
+        itsgonnarainMainviewNavigationBar.buttons["add"].tap()
+        app.typeText("Paris")
+        app.alerts["Add City"].scrollViews.otherElements.buttons["Cancel"].tap()
+    }
+    
+    func testTouch() throws {
+        app.swipeUp()
+        app.swipeDown()
+        app.swipeRight()
+        app.swipeLeft(velocity: XCUIGestureVelocity(integerLiteral: 500))
+        app.doubleTap()
+    }
+    
+//    func testLaunchPerformance() throws {
+//        if #available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 7.0, *) {
+//            // This measures how long it takes to launch your application.
+//            measure(metrics: [XCTApplicationLaunchMetric(waitUntilResponsive: true)]) {
+//                XCUIApplication().launch()
+//            }
+//        }
+//    }
 }
