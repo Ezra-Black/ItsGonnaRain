@@ -92,8 +92,7 @@ class ItsGonnaRainTests: XCTestCase {
     }
     
     
-    func testFetchingCurrentWeather() {
-        //calling a real network manager here
+    func testFetchingLiveCurrentWeather() {
         let sut = NetworkManager()
         let expectation = expectation(description: "Received valid JSON")
         sut.fetchCurrentWeather(city: "San Francisco") { weather in
@@ -103,16 +102,14 @@ class ItsGonnaRainTests: XCTestCase {
         wait(for: [expectation], timeout: 1)
     }
     
-    func testFetchingMockWeather() {
-        let expectation = expectation(description: "Finished")
-        let loader = MockAPI(data: validJSONSanFran, error: nil)
-        let sut = NetworkManager(networkLoader: loader)
-        sut.fetchCurrentWeather(city: "San Francisco") { weather in
+    func testFetchingLocationWeather() {
+        let sut = NetworkManager()
+        let expectation = expectation(description: "location fetch success")
+        sut.fetchCurrentLocationWeather(lat: "38.58362662029875", lon: "-90.02905025910329") { weather in
             XCTAssertNotNil(weather)
             expectation.fulfill()
         }
-        wait(for: [expectation], timeout: 1)
-        
+        wait(for: [expectation], timeout: 5)
     }
 }
 

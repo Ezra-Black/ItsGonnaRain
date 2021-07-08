@@ -11,7 +11,6 @@
 		7F1507112683C950000476DE /* UIImage+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F1507102683C950000476DE /* UIImage+Ext.swift */; };
 		7F15071A2683FDC4000476DE /* NetworkDataLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F1507182683FDC4000476DE /* NetworkDataLoader.swift */; };
 		7F15071B2683FDC4000476DE /* MockAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F1507192683FDC4000476DE /* MockAPI.swift */; };
-		7F15071D2683FDE2000476DE /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F15071C2683FDE2000476DE /* Cache.swift */; };
 		7F1507222684314A000476DE /* HourlyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F15071F2684314A000476DE /* HourlyCell.swift */; };
 		7F1507232684314A000476DE /* ForecastCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F1507202684314A000476DE /* ForecastCell.swift */; };
 		7F1507242684314A000476DE /* SelfConfiguringCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F1507212684314A000476DE /* SelfConfiguringCell.swift */; };
@@ -54,7 +53,6 @@
 		7F1507102683C950000476DE /* UIImage+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Ext.swift"; sourceTree = "<group>"; };
 		7F1507182683FDC4000476DE /* NetworkDataLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkDataLoader.swift; sourceTree = "<group>"; };
 		7F1507192683FDC4000476DE /* MockAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockAPI.swift; sourceTree = "<group>"; };
-		7F15071C2683FDE2000476DE /* Cache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
 		7F15071F2684314A000476DE /* HourlyCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HourlyCell.swift; sourceTree = "<group>"; };
 		7F1507202684314A000476DE /* ForecastCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForecastCell.swift; sourceTree = "<group>"; };
 		7F1507212684314A000476DE /* SelfConfiguringCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelfConfiguringCell.swift; sourceTree = "<group>"; };
@@ -210,7 +208,6 @@
 			children = (
 				7FEB93BA26838BA500BDC296 /* WeatherModel.swift */,
 				7F3129A126838D9900D1D434 /* ForecastModel.swift */,
-				7F15071C2683FDE2000476DE /* Cache.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -367,7 +364,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7F15071D2683FDE2000476DE /* Cache.swift in Sources */,
 				7F15070D2683A851000476DE /* Float+Ext.swift in Sources */,
 				7F3129A7268393AC00D1D434 /* Int+Ext.swift in Sources */,
 				7F3129A426838E2F00D1D434 /* NetworkManager.swift in Sources */,
